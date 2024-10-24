@@ -11,16 +11,16 @@ import (
 type MetricMonitor struct {
 	Pos lexer.Position
 
-	Aggregation      string       `@Ident`
-	EvaluationWindow string       `"(" @Ident ")" ":"`
-	MetricQuery      *MetricQuery `@@`
-	Comparator       string       `@( ">" | ">" "=" | "<" | "<" "=" )`
-	Threshold        float64      `@(Ident)`
+	Aggregation      string            `@Ident`
+	EvaluationWindow string            `"(" @Ident ")" ":"`
+	MetricExpression *MetricExpression `@@`
+	Comparator       string            `@( ">" | ">" "=" | "<" | "<" "=" )`
+	Threshold        float64           `@(Ident)`
 }
 
 // String returns the string representation of the metric monitor.
 func (mm *MetricMonitor) String() string {
-	return fmt.Sprintf("%s(%s):%s %s %g", mm.Aggregation, mm.EvaluationWindow, mm.MetricQuery.String(), mm.Comparator, mm.Threshold)
+	return fmt.Sprintf("%s(%s):%s %s %g", mm.Aggregation, mm.EvaluationWindow, mm.MetricExpression.String(), mm.Comparator, mm.Threshold)
 }
 
 // NewMetricMonitorParser returns a Parser which is capable of interpretting
