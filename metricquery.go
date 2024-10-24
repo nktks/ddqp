@@ -11,11 +11,20 @@ import (
 type MetricQuery struct {
 	Pos lexer.Position
 
-	Query []*Query `parser:"@@"`
+	Query []*QueryFunction `parser:"@@"`
 }
 
 func (mq *MetricQuery) String() string {
 	return mq.Query[0].String()
+}
+
+type QueryFunction struct {
+	Name string `@Ident`
+	Arg  *Query `"(" @@ ")"`
+}
+
+func (q *QueryFunction) String() string {
+	return fmt.Sprintf("%s(%s)", q.Name, q.Arg.String())
 }
 
 type Query struct {
