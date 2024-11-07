@@ -9,18 +9,22 @@ import (
 )
 
 type MetricQuery struct {
-	Pos lexer.Position
-
-	Query []*QueryFunction `parser:"@@"`
+	Pos           lexer.Position
+	QueryFunction []*QueryFunction `@@*`
+	Query         []*Query         `@@*`
 }
 
 func (mq *MetricQuery) String() string {
-	return mq.Query[0].String()
+	if len(mq.Query) > 0 {
+		return mq.Query[0].String()
+	}
+	return mq.QueryFunction[0].String()
+
 }
 
 type QueryFunction struct {
-	Name string `@Ident`
-	Arg  *Query `"(" @@ ")"`
+	Name string `@Ident?`
+	Arg  *Query `"("? @@ ")"?`
 }
 
 func (q *QueryFunction) String() string {
