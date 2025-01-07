@@ -77,7 +77,7 @@ func (t *Term) GetQueries() []string {
 }
 
 type OpTerm struct {
-	Operator Operator `@("+" | "-")`
+	Operator Operator `@("+" | "-" | "/" | "*")`
 	Term     *Term    `@@`
 }
 

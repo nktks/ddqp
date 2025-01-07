@@ -31,6 +31,15 @@ func (q *QueryFunction) String() string {
 	return fmt.Sprintf("%s(%s)", q.Name, q.Arg.String())
 }
 
+type OpIdent struct {
+	Operator Operator `@("+" | "-" | "/" | "*")`
+	Ident    string   `@Ident`
+}
+
+func (o *OpIdent) String() string {
+	return fmt.Sprintf(" %s %s", o.Operator, o.Ident)
+}
+
 type Query struct {
 	Pos lexer.Position
 
@@ -39,6 +48,7 @@ type Query struct {
 	Separator                 string        `parser:"':'"`
 	MetricName                string        `parser:"@Ident( @'.' @Ident)*"`
 	Filters                   *MetricFilter `parser:"'{' @@ '}'"`
+	OpIdent                   *OpIdent      `parser:"( @@)?"`
 	By                        string        `parser:"Ident?"`
 	Grouping                  []string      `parser:"'{'? ( @Ident ( ',' @Ident )* )? '}'?"`
 	Function                  []*Function   `parser:"( @@ ( '.' @@ )* )?"`
@@ -53,6 +63,9 @@ func (q *Query) String() string {
 
 	base = fmt.Sprintf("%s:%s{%s}", base, q.MetricName, q.Filters.String())
 
+	if q.OpIdent != nil {
+		base = fmt.Sprintf("%s%s", base, q.OpIdent.String())
+	}
 	if len(q.Grouping) > 0 {
 		base = fmt.Sprintf("%s by {%s}", base, strings.Join(q.Grouping, ","))
 	}
